@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import MetaMaskOnboarding from "@metamask/onboarding";
 
@@ -12,17 +12,23 @@ declare let window: any;
 export function App() {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
-  const [accounts, setAccounts] = useState<string[]>([]);
+  const [accounts, setAccounts] = useState<string>("");
   const [recepeint, setRecepeint] = useState<string>("");
   const onboarding = React.useRef<MetaMaskOnboarding>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    window.ethereum.on("accountsChanged", (accounts: string) => {
+      setAccounts(accounts);
+    });
+  }, []);
+
+  useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
       if (accounts.length > 0) {
         setButtonText(CONNECTED_TEXT);
@@ -39,7 +45,7 @@ export function App() {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
       window.ethereum
         .request({ method: "eth_requestAccounts" })
-        .then((newAccounts: string[]) => {
+        .then((newAccounts: string) => {
           setAccounts(newAccounts);
           toast.success(`Connected: ${newAccounts[0].substring(0, 10)}...`);
         });
