@@ -24,13 +24,14 @@ export function App() {
 
   useEffect(() => {
     window.ethereum.on("accountsChanged", (accounts: string) => {
+      toast.success("Address changed");
       setAccounts(accounts);
     });
   }, []);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      if (accounts.length > 0) {
+      if (accounts) {
         setButtonText(CONNECTED_TEXT);
         setDisabled(true);
         onboarding.current?.stopOnboarding();
@@ -45,8 +46,8 @@ export function App() {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
       window.ethereum
         .request({ method: "eth_requestAccounts" })
-        .then((newAccounts: string) => {
-          setAccounts(newAccounts);
+        .then((newAccounts: string[]) => {
+          setAccounts(newAccounts[0]);
           toast.success(`Connected: ${newAccounts[0].substring(0, 10)}...`);
         });
     } else {
@@ -59,13 +60,13 @@ export function App() {
     console.log(value);
 
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      if (accounts.length > 0) {
+      if (accounts) {
         window.ethereum
           .request({
             method: "eth_sendTransaction",
             params: [
               {
-                from: accounts[0],
+                from: accounts,
                 to: recepeint,
                 value: value,
               },
@@ -89,8 +90,8 @@ export function App() {
     <>
       <div className="p-8 space-y-12">
         <div className="flex flex-col space-y-4">
-          {accounts.length === 0 && <p>Please connect to MetaMask</p>}
-          {accounts.length !== 0 && <p>Your Accounts: {accounts}</p>}
+          {!accounts && <p>Please connect to MetaMask</p>}
+          {accounts && <p>Your Accounts: {accounts}</p>}
           <button
             disabled={isDisabled}
             onClick={onClick}
@@ -100,7 +101,7 @@ export function App() {
           </button>
         </div>
 
-        {accounts.length !== 0 && (
+        {accounts && (
           <div className="flex space-x-4">
             <input
               type="text"
