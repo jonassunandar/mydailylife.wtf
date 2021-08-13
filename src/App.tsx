@@ -24,9 +24,9 @@ export function App() {
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      window.ethereum.on("accountsChanged", (accounts: string) => {
+      window.ethereum.on("accountsChanged", (accounts: string[]) => {
         toast.success("Address changed");
-        setAccounts(accounts);
+        setAccounts(accounts[0]);
       });
     }
   }, []);
