@@ -60,7 +60,7 @@ export function App() {
             params: [
               {
                 from: accounts[0],
-                to: "0xe2e204F97dED289d11aEb03b45Aa817432A613C7",
+                to: recepeint,
                 value: value,
               },
             ],
@@ -100,6 +100,9 @@ export function App() {
               type="text"
               className="px-3 py-2 border rounded"
               placeholder="recepeint address"
+              onChange={(e) => {
+                setRecepeint(e.target.value);
+              }}
             />
             <button
               onClick={handleSendTransaction}
